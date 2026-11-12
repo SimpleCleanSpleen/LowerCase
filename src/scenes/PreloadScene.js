@@ -26,6 +26,7 @@ export class PreloadScene extends Phaser.Scene {
     }
     this.load.image('font', assetUrl('ui/font.png'));
     this.load.spritesheet('fx', assetUrl('ui/fx.png'), { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('bolt', assetUrl('ui/bolt.png'), { frameWidth: 40, frameHeight: 160 });
   }
 
   create() {

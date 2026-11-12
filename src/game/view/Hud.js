@@ -42,6 +42,12 @@ export class Hud {
     this.scene.tweens.add({ targets: this.announceText, scale: { from: (big ? 6 : 4) * 1.6, to: big ? 6 : 4 }, duration: 160, ease: 'Back.Out' });
   }
 
+  /** Short callout on one side of the screen (e.g. COUNTER!). */
+  popup(side, str) {
+    const t = text(this.scene, side ? GAME_WIDTH - 16 : 16, 84, str, { scale: 2, align: side ? 'right' : 'left', depth: 105, tint: 0x7ad8ff });
+    this.scene.tweens.add({ targets: t, y: 74, alpha: 0, delay: 500, duration: 500, onComplete: () => t.destroy() });
+  }
+
   showCombo(side, n) {
     if (n < 2) return;
     setText(this.combo[side], `${n} HITS`).setAlpha(1);

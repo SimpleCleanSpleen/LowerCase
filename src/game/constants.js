@@ -19,4 +19,4 @@ export const ROUND_SECONDS = 60;
 export const ROUNDS_TO_WIN = 2;
 
 // Characters loaded at boot. Each id maps to public/assets/characters/<id>/.
-export const ROSTER = ['herc', 'bella'];
+export const ROSTER = ['herc', 'bella', 'skopos', 'bjorn'];

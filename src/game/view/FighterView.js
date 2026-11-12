@@ -55,7 +55,8 @@ export class FighterView {
       const g = Math.round(255 - (full ? 40 + pulse * 60 : k * 70));
       const b = Math.round(255 - (full ? 120 + pulse * 100 : k * 160));
       sp.setTint(Phaser.Display.Color.GetColor(255, g, b));
-    } else if (s.invuln > 0 && s.state !== 'attack' && t % 4 < 2) sp.setTint(0xb0b0ff);
+    } else if (s.buff > 0 && t % 6 < 3) sp.setTint(0xa8e0ff);
+    else if (s.invuln > 0 && s.state !== 'attack' && t % 4 < 2) sp.setTint(0xb0b0ff);
     else sp.clearTint();
   }
 
@@ -88,10 +89,18 @@ export function poseFor(s, t) {
     case 'dashB':
       return 'backdash';
     case 'air':
+      if (s.vaultT > 0) return s.vaultT > 8 ? 'uq_strike' : 'uq_follow';
       return s.vy < 60 ? 'jump' : 'fall';
+    case 'throwWhiff':
+      return 'throw_grab';
+    case 'counterStrike':
+      return s.pf < 12 ? 'uq_strike' : 'uq_follow';
     case 'attack': {
       const p = s.move?.pose ?? 'mid';
       if (p === 'air') return s.phase === 'startup' ? 'air_wind' : s.phase === 'active' ? 'air_strike' : 'fall';
+      if (s.move.kind === 'counter') return 'uq_wind';
+      if (s.move.kind === 'buff' && s.phase === 'active') return 'uq_strike';
+      if (s.phase === 'active' && s.def.art.poses[`${p}_strike2`] !== undefined && Math.floor(s.pf / 4) % 2) return `${p}_strike2`;
       return `${p}_${s.phase === 'startup' ? 'wind' : s.phase === 'active' ? 'strike' : 'follow'}`;
     }
     case 'hitstun':

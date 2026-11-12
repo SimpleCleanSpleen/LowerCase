@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { Cpu } from '../game/ai/Cpu.js';
 import { Sfx } from '../game/audio/Sfx.js';
 import { GAME_HEIGHT, GAME_WIDTH, SIM_HZ, STAGE_WIDTH } from '../game/constants.js';
-import { EMPTY_PAD, KEYMAPS, Keyboard, PadSource } from '../game/input/devices.js';
+import { EMPTY_PAD, Keyboard, PadSource, SOLO_DEVICES } from '../game/input/devices.js';
 import { MenuInput } from '../game/input/menu.js';
 import { hitbox, hurtbox, pushbox } from '../game/sim/boxes.js';
 import { Match, projBox } from '../game/sim/Match.js';
@@ -43,13 +43,13 @@ export class FightScene extends Phaser.Scene {
     this.kb = new Keyboard();
     this.events.once('shutdown', () => this.kb.destroy());
     this.cpu = new Cpu(this.match, 1, cfg.cpuLevel ?? 1, (Date.now() & 0xffff) | 1);
-    if (cfg.mode === 'versus') this.sources = [new PadSource(this.kb, KEYMAPS.p1, 0), new PadSource(this.kb, KEYMAPS.p2, 1)];
-    else this.sources = [new PadSource(this.kb, KEYMAPS.solo, 0), null];
+    this.devices = cfg.mode === 'versus' ? cfg.devices : SOLO_DEVICES;
+    this.sources = [new PadSource(this.kb, this.devices.p1), cfg.mode === 'versus' ? new PadSource(this.kb, this.devices.p2) : null];
     this.dummyMode = 0;
     this.showBoxes = false;
     this.debug = this.add.graphics().setDepth(45);
 
-    this.menuInput = new MenuInput(this, false);
+    this.menuInput = new MenuInput(this, this.devices);
     this.menu = null;
     this.accumulator = 0;
     this.t = 0;
@@ -107,6 +107,10 @@ export class FightScene extends Phaser.Scene {
   }
 
   simTick() {
+    if (this.cfg.mode === 'versus' && this.match.phase !== 'over') {
+      const lost = this.sources.findIndex((s) => !s.connected());
+      if (lost >= 0) return this.openMenu(`P${lost + 1} CONTROLLER LOST`, ['RESUME', 'RESTART', 'CHARACTER SELECT', 'TITLE']);
+    }
     const pads = [this.padFor(0), this.padFor(1)];
     this.kb.endTick();
     const start = pads[0].start || pads[1].start;
@@ -151,6 +155,16 @@ export class FightScene extends Phaser.Scene {
         break;
       case 'ko':
         Sfx.ko();
+        break;
+      case 'counter':
+        Sfx.counter();
+        this.hud.popup(e.fighter.side, 'COUNTER!');
+        break;
+      case 'bolt':
+      case 'storm':
+      case 'zap':
+        Sfx.thunder();
+        if (e.type === 'storm') this.hud.popup(e.fighter.side, 'STORM CHARGED!');
         break;
       case 'matchOver':
         this.time.delayedCall(600, () => this.openMenu(`${this.match.fighters[e.winner].def.displayName} WINS!`, ['REMATCH', 'CHARACTER SELECT', 'TITLE']));
@@ -240,7 +254,7 @@ export class FightScene extends Phaser.Scene {
     const choice = M.items[M.cursor];
     if (choice === 'RESUME') return this.closeMenu();
     if (choice === 'RESTART' || choice === 'REMATCH') return this.scene.restart(this.cfg);
-    if (choice === 'CHARACTER SELECT') return this.scene.start('Select', { mode: this.cfg.mode, prev: this.cfg });
+    if (choice === 'CHARACTER SELECT') return this.scene.start('Select', { mode: this.cfg.mode, prev: this.cfg, devices: this.cfg.devices });
     return this.scene.start('Title');
   }
 

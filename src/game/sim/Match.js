@@ -28,6 +28,7 @@ export class Match {
     this.slowmo = 0;
     this.advantage = null;
     this.pendingAdv = null;
+    this.regen = [0, 0];
     this.startRound();
   }
 
@@ -178,9 +179,17 @@ export class Match {
   }
 
   spawnProjectile(f, m) {
+    if (m.kind === 'strike') {
+      // Thunderclap: a lightning column drops on a spot ahead
+      const S = m.strike;
+      const x = Math.min(Math.max(f.x + f.facing * S.distance, 20), STAGE_WIDTH - 20);
+      this.projectiles.push({ owner: f, move: m, kind: 'bolt', x, y: f.y - S.h / 2, w: S.w, h: S.h, vx: 0, age: 0, life: S.life });
+      this.emit({ type: 'bolt', fighter: f, x });
+      return;
+    }
     const P = m.projectile;
     this.projectiles.push({
-      owner: f, move: m,
+      owner: f, move: m, kind: 'wave',
       x: f.x + f.facing * P.x, y: f.y + P.y, w: P.w, h: P.h,
       vx: f.facing * P.speed, age: 0,
     });
@@ -195,6 +204,7 @@ export class Match {
       p.x += p.vx * DT;
       p.age++;
       if (p.x < cam - 40 || p.x > cam + GAME_WIDTH + 40) p.dead = true;
+      if (p.life && p.age > p.life) p.dead = true;
     }
     // projectiles cancel each other out
     for (const p of this.projectiles)
@@ -212,7 +222,7 @@ export class Match {
       const half = f.def.boxes.push.w / 2;
       f.x = Math.min(Math.max(f.x, half), STAGE_WIDTH - half);
     }
-    if (a.state !== 'thrown' && b.state !== 'thrown') {
+    if (a.state !== 'thrown' && b.state !== 'thrown' && !a.ghost && !b.ghost) {
       const pa = pushbox(a);
       const pb = pushbox(b);
       if (overlaps(pa, pb)) {
@@ -244,11 +254,16 @@ export class Match {
   resolveHits() {
     const hits = [];
     for (const atk of this.fighters) {
-      if (atk.contact || atk.state !== 'attack') continue;
+      if (atk.state !== 'attack') continue;
+      const mh = atk.move?.multiHit;
+      const again = mh && atk.hitsLanded < mh.count && atk.now - atk.lastContactAt >= mh.interval;
+      if (atk.contact && !again) continue;
       const def = this.fighters[1 - atk.side];
       if (def.strikeInvulnerable()) continue;
       const hb = hitbox(atk);
-      if (overlaps(hb, hurtbox(def))) hits.push({ atk, def, hb, move: atk.move, damage: atk.currentDamage(), full: atk.fullyCharged });
+      if (!overlaps(hb, hurtbox(def))) continue;
+      if (def.state === 'attack' && def.move?.kind === 'counter' && def.phase === 'active') hits.push({ counter: true, atk, def });
+      else hits.push({ atk, def, hb, move: atk.move, damage: atk.currentDamage(), full: atk.fullyCharged });
     }
     for (const p of this.projectiles) {
       const def = this.fighters[1 - p.owner.side];
@@ -260,7 +275,7 @@ export class Match {
       }
     }
     this.projectiles = this.projectiles.filter((p) => !p.dead);
-    for (const h of hits) this.applyHit(h);
+    for (const h of hits) (h.counter ? this.applyCounter(h) : this.applyHit(h));
   }
 
   applyHit({ atk, def, hb, move, damage, full, projectile }) {
@@ -268,7 +283,11 @@ export class Match {
     const dir = Math.sign(def.x - src.x) || atk.facing;
     const nearWall = def.x < 40 || def.x > STAGE_WIDTH - 40;
     const blocked = def.blocks(src, projectile ? 'mid' : move.guard);
-    if (!projectile) atk.contact = blocked ? 'block' : 'hit';
+    if (!projectile) {
+      atk.contact = blocked ? 'block' : 'hit';
+      atk.hitsLanded++;
+      atk.lastContactAt = atk.now;
+    }
     const x = projectile ? projectile.x : (hb.x + hb.w / 2 + def.x) / 2;
     const y = projectile ? projectile.y : hb.y + hb.h / 2;
 
@@ -281,9 +300,18 @@ export class Match {
       this.hitstop = Math.max(this.hitstop, 7);
       this.emit({ type: 'block', x, y, attacker: atk, defender: def });
     } else {
-      const scaled = Math.max(1, Math.round(damage * COMBO_SCALE[Math.min(def.comboHits, COMBO_SCALE.length - 1)]));
-      const knock = move.knockdown || full;
-      const launch = move.launch ?? (knock ? { vx: 110, vy: -320 } : null);
+      let scaled = Math.max(1, Math.round(damage * COMBO_SCALE[Math.min(def.comboHits, COMBO_SCALE.length - 1)]));
+      const lastOfMulti = move.multiHit && atk.hitsLanded >= move.multiHit.count;
+      let knock = move.knockdown || full || (move.knockdownLast && lastOfMulti);
+      if (atk.buff > 0 && !projectile) {
+        // Storm Charge: the next hit is supercharged
+        scaled = Math.round(scaled * 1.5);
+        knock = true;
+        atk.buff = 0;
+        this.emit({ type: 'zap', x: def.x, y: def.y });
+      }
+      if (this.training) scaled = Math.min(scaled, def.hp - 1);
+      const launch = knock ? (move.launch ?? { vx: 110, vy: -320 }) : null;
       const chargeBonus = move.maxCharge ? Math.round((atk.charge / move.maxCharge) * 6) : 0;
       def.takeHit({ damage: scaled, hitstun: move.hitstun + chargeBonus, launch, dir, push: move.pushHit });
       if (nearWall && !projectile && atk.grounded) {
@@ -298,7 +326,23 @@ export class Match {
     this.pendingAdv = { atk, def };
   }
 
+  /** Grudge Counter: the attacker gets punished, the counterer takes nothing. */
+  applyCounter({ atk, def }) {
+    const C = def.def.moves.unique.counter;
+    atk.contact = 'hit';
+    def.counterStrike();
+    def.face(atk);
+    const dmg = this.training ? Math.min(C.damage, atk.hp - 1) : C.damage;
+    atk.takeHit({ damage: dmg, hitstun: 0, launch: C.launch, dir: Math.sign(atk.x - def.x) || def.facing, push: 0 });
+    this.hitstop = 22;
+    this.shake = 16;
+    this.emit({ type: 'counter', fighter: def, x: (atk.x + def.x) / 2, y: def.y - 50 });
+    this.emit({ type: 'hit', x: atk.x, y: atk.y - 50, attacker: def, defender: atk, damage: dmg, heavy: true, combo: atk.comboHits });
+    this.pendingAdv = { atk: def, def: atk };
+  }
+
   applyThrow(atk, def, T, dir) {
+    if (this.training) T = { ...T, damage: Math.min(T.damage, def.hp - 1) };
     def.takeHit({ damage: T.damage, hitstun: 0, launch: { vx: T.launch.vx, vy: T.launch.vy }, dir, push: 0 });
     this.hitstop = 8;
     this.shake = 8;
@@ -318,9 +362,11 @@ export class Match {
     }
   }
 
+  /** Training: health refills smoothly shortly after each combo ends. */
   trainingRefill() {
     for (const f of this.fighters) {
-      if (f.actionable && f.now - f.actionableAt > 60 && f.hp < f.def.maxHp) f.hp = f.def.maxHp;
+      if (f.actionable && f.now - f.actionableAt > 40 && f.hp < f.def.maxHp) f.hp = Math.min(f.def.maxHp, f.hp + 3);
+      if (f.hp < 1) f.hp = 1;
     }
   }
 

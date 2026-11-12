@@ -1,33 +1,36 @@
-import { KEYMAPS, Keyboard, readGamepad } from './devices.js';
+import { Keyboard, PadSource, SOLO_DEVICES, readGamepad } from './devices.js';
 
-const BACK_KEYS = ['Escape', 'Backspace'];
+const KB_CONFIRM = ['KeyJ', 'KeyK', 'KeyI', 'KeyL', 'Enter', 'Space'];
+const KB_BACK = ['Escape', 'Backspace'];
 
 /**
  * Menu navigation for up to two players: edge-triggered
- * { up, down, left, right, confirm, back } per player.
- * twoPlayer=false: player 0 uses the solo keymap (WASD/arrows + J/K/I/Enter).
+ * { up, down, left, right, confirm, back } per player, built from that
+ * player's assigned devices (keyboard and/or controllers).
+ * Controllers: A / Cross (bottom) or Start confirms, B / Circle (right) backs out.
  */
 export class MenuInput {
-  constructor(scene, twoPlayer = false) {
+  constructor(scene, devices = SOLO_DEVICES) {
     this.kb = new Keyboard();
-    this.twoPlayer = twoPlayer;
-    this.prev = [{}, {}];
+    this.sources = [new PadSource(this.kb, devices.p1), new PadSource(this.kb, devices.p2)];
     this.hold = [{}, {}];
+    // Buttons already held when the screen opens (e.g. the press that opened
+    // it) must be released first, or they'd immediately act here too.
+    this.prev = [this.raw(0), this.raw(1)];
     scene.events.once('shutdown', () => this.kb.destroy());
   }
 
   raw(i) {
-    const map = this.twoPlayer ? (i ? KEYMAPS.p2 : KEYMAPS.p1) : i ? null : KEYMAPS.solo;
-    const k = map ? this.kb.read(map) : {};
-    const gp = readGamepad(i);
-    const back = (i === 0 && BACK_KEYS.some((c) => this.kb.down.has(c) || this.kb.tapped.has(c))) || (gp && navigator.getGamepads()[i]?.buttons[1]?.pressed);
+    const src = this.sources[i];
+    const k = src.useKeyboard ? this.kb : null;
+    const pads = src.padIndices().map(readGamepad).filter(Boolean);
+    const any = (f) => pads.some(f);
+    const kb = (codes) => !!k && codes.some((c) => k.has(c));
+    const p = src.poll();
     return {
-      up: k.up || gp?.up,
-      down: k.down || gp?.down,
-      left: k.left || gp?.left,
-      right: k.right || gp?.right,
-      confirm: (k.high || k.mid || k.low || (k.start && !this.kb.down.has('Escape'))) || gp?.low || gp?.start,
-      back: !!back,
+      up: p.up, down: p.down, left: p.left, right: p.right,
+      confirm: kb(KB_CONFIRM) || any((g) => g.low || g.start),
+      back: kb(KB_BACK) || any((g) => g.back),
     };
   }
 
@@ -37,8 +40,7 @@ export class MenuInput {
       const r = this.raw(i);
       const e = {};
       for (const k of Object.keys(r)) {
-        const was = this.prev[i][k];
-        e[k] = r[k] && !was;
+        e[k] = r[k] && !this.prev[i][k];
         if (r[k] && ['up', 'down', 'left', 'right'].includes(k)) {
           this.hold[i][k] = (this.hold[i][k] ?? 0) + 1;
           if (this.hold[i][k] > 18 && this.hold[i][k] % 6 === 0) e[k] = true;

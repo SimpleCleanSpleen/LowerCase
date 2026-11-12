@@ -108,6 +108,64 @@ const BELLA_HEAD = {
   ],
 };
 
+// Skopos: Corinthian-style helm with a horsehair crest; face mostly covered.
+const SKOPOS_HEAD = {
+  ax: 9,
+  ay: 18,
+  rows: [
+    '....oooooooo.......',
+    '..ooCCCCCCCCoo.....',
+    '.oCCCCcccCCCCCo....',
+    '.occcooooooocCo....',
+    '..oooLLLLLAAoo.....',
+    '.oLLLLLAAAAAAAo....',
+    'oLLLAAAAAAAAAAAo...',
+    'oLAAAAAAAAAAAAAAo..',
+    'oAAAAAAAaTTTTTTTo..',
+    'oAAAAAAaToooVVVVVo.',
+    'oaAAAAAaTAAAoVVVVo.',
+    'oaAAAAAaAAAAAAoAAo.',
+    'oaAAAAaaAAAAAAAoSSo',
+    'oaaAAAaaAAAAAAoSSSo',
+    '.oaaAAaaAAAAAAoSso.',
+    '.oaaaaaaAAAAAAAoo..',
+    '..oaaaaaaAAAAAAo...',
+    '...oaaaaaoAAAAo....',
+    '....ooooo.oooo.....',
+  ],
+};
+
+// Bjorn: horned iron cap, big nose, magnificent braided beard (anchor = chin).
+const BJORN_HEAD = {
+  ax: 10,
+  ay: 14,
+  rows: [
+    'oo................oo',
+    'oMo..............oMo',
+    'oMMo..oooooooo..oMMo',
+    '.oMMooLLLLLAAAooMMo.',
+    '..oMMLLLLAAAAAAMMo..',
+    '...oLLAAAAAAAAAAAo..',
+    '..oLAAAAAAAAAAAAAAo.',
+    '..oTTTTTTTTTTTTTTTo.',
+    '..oaoSSSSSSSSSSSSSo.',
+    '..oaoSHHHSSSSHHHSSo.',
+    '..oaoSSoVSSSSSoVSSo.',
+    '..oaoSSSSSSSSssSSSSo',
+    '..oaHSSSSSSSSssSSSSo',
+    '..oHHHHHHHHHHHHHHHHo',
+    '..oHHHHHHHsoosHHHHHo',
+    '...oHHHHHHHHHHHHHHo.',
+    '...oHHHHHHHHHHHHHo..',
+    '....oHHHHHHHHHHHo...',
+    '.....oHHHHTTHHHo....',
+    '......oHHHHHHHo.....',
+    '.......oHHHHHo......',
+    '........oTTTo.......',
+    '.........ooo........',
+  ],
+};
+
 // -------------------------------------------------------------- weapons --
 
 /** Herc: heavy bearded war axe, one-handed. */
@@ -146,6 +204,43 @@ function drawGlaive(cv, grip, ang, flip) {
   capsule(cv, P(38.5, -4.5), P(38.5, 5), 1.4, 1.4, ['trim', 'trim']);
 }
 
+/** Skopos: a straight two-handed longsword. */
+function drawSword(cv, grip, ang, flip) {
+  const d = dir(ang);
+  const e = mul(rot(d, Math.PI / 2), flip ? -1 : 1);
+  const P = (a, s) => add(add(grip, mul(d, a)), mul(e, s));
+  capsule(cv, P(-8, 0), P(1, 0), 1.6, 1.6, ['visor', 'outline']);
+  circle(cv, P(-9, 0), 2, ['trim', 'trim']);
+  polygon(
+    cv,
+    [P(2, -2.2), P(34, -1.8), P(40, 0), P(34, 1.8), P(2, 2.2)],
+    (x, y) => {
+      const s = (x - grip[0]) * e[0] + (y - grip[1]) * e[1];
+      return s > 0.8 ? 'armorLight' : s > -0.8 ? 'steel' : 'steelShade';
+    },
+  );
+  capsule(cv, P(1.5, -5.5), P(1.5, 5.5), 1.3, 1.3, ['trim', 'trim']);
+}
+
+/** Bjorn: a stubby war hammer with a big square head. */
+function drawHammer(cv, grip, ang, flip) {
+  const d = dir(ang);
+  const e = mul(rot(d, Math.PI / 2), flip ? -1 : 1);
+  const P = (a, s) => add(add(grip, mul(d, a)), mul(e, s));
+  capsule(cv, P(-5, 0), P(14, 0), 1.8, 1.8, WOOD);
+  polygon(
+    cv,
+    [P(12, -8), P(23, -8), P(23, 8), P(12, 8)],
+    (x, y) => {
+      const s = (x - grip[0]) * e[0] + (y - grip[1]) * e[1];
+      const a = (x - grip[0]) * d[0] + (y - grip[1]) * d[1];
+      return a > 20.5 ? 'armorLight' : s > 4 ? 'steel' : 'steelShade';
+    },
+  );
+  capsule(cv, P(14.5, -8), P(14.5, 8), 1, 1, ['trim', 'trim'], { outline: null });
+  capsule(cv, P(20.5, -8), P(20.5, 8), 1, 1, ['trim', 'trim'], { outline: null });
+}
+
 // ----------------------------------------------------------- characters --
 
 const CHARS = {
@@ -172,6 +267,31 @@ const CHARS = {
     braid: true,
     cape: true,
     boot: 3.2,
+    backGrip: -18,
+  },
+  skopos: {
+    leg: { thigh: 22, shin: 21, ankle: 3, rThigh: [6, 4.8], rShin: [4.6, 3.8], spread: 3.5, knee: 3.8 },
+    torso: { len: 28, rHip: 9, rChest: 12 },
+    arm: { upper: 16, fore: 15, rU: [4.8, 4], rF: [4, 3.4], fist: 3.7, pauldron: 6.4, spread: 5, drop: 4 },
+    neck: 3,
+    skirt: 13,
+    head: SKOPOS_HEAD,
+    weapon: drawSword,
+    twoHanded: true,
+    cape: true,
+    boot: 3.2,
+    backGrip: -6,
+  },
+  bjorn: {
+    leg: { thigh: 13, shin: 12, ankle: 3, rThigh: [7.4, 6], rShin: [5.8, 5], spread: 4.5, knee: 4.6 },
+    torso: { len: 21, rHip: 11.5, rChest: 14.5 },
+    arm: { upper: 11, fore: 10, rU: [5.8, 5], rF: [5, 4.4], fist: 4.6, pauldron: 5.6, spread: 5, drop: 5 },
+    neck: 5,
+    skirt: 8,
+    head: BJORN_HEAD,
+    weapon: drawHammer,
+    twoHanded: false,
+    boot: 3.8,
   },
 };
 
@@ -194,7 +314,7 @@ function drawFigure(cv, ch, P) {
   const limbArm = (side) => {
     const sh = shoulder(side);
     let hand;
-    if (side < 0 && P.bh === undefined) hand = add(grip, mul(wd, ch.twoHanded ? -18 : 0));
+    if (side < 0 && P.bh === undefined) hand = add(grip, mul(wd, ch.backGrip ?? 0));
     else if (side < 0 && typeof P.bh === 'number') hand = add(grip, mul(wd, P.bh));
     else hand = side > 0 ? grip : at(P.bh);
     const up = P[side > 0 ? 'elbowF' : 'elbowB'] === 'up';
@@ -397,6 +517,14 @@ const HERC_POSES = (() => {
 
     win0: { hip: [0, -34], lean: 0, ff: [10, 0], bf: [-11, 0], fh: [15, -80], wa: 8, bh: [-8, -40] },
     win1: { hip: [0, -33], lean: 0, ff: [10, 0], bf: [-11, 0], fh: [17, -84], wa: -4, bh: [-8, -40] },
+
+    // Grudge Counter: defiant parry stance, then the punishing swing
+    uq_wind: { hip: [-3, -31], lean: -8, ff: [12, 0], bf: [-15, 0], fh: [15, -60], wa: -62, bh: [17, -50], backArmFront: true, head: 6 },
+    uq_strike: {
+      hip: [7, -29], lean: 32, ff: [21, 0], bf: [-14, 0], fh: [31, -44], wa: 104, bh: [4, -50],
+      smear: { c: [10, -50], r0: 22, r1: 46, a0: -60, a1: 120 },
+    },
+    uq_follow: { hip: [5, -29], lean: 26, ff: [20, 0], bf: [-14, 0], fh: [27, -28], wa: 148, bh: [6, -46] },
   });
   return P;
 })();
@@ -474,9 +602,60 @@ const BELLA_POSES = (() => {
 
     win0: { hip: [0, -53], lean: 0, ff: [14, 0], bf: [-15, 0], fh: [14, -70], wa: 0, bh: [-12, -104], backArmFront: false, cape: 0.2 },
     win1: { hip: [0, -53], lean: 0, ff: [14, 0], bf: [-15, 0], fh: [14, -70], wa: 0, bh: [-4, -106], cape: 0.2 },
+
+    // Guardian Vault: plant the glaive, swing up and over it
+    uq_wind: { hip: [3, -48], lean: 16, ff: [21, 0], bf: [-14, 0], fh: [27, -64], wa: 162, cape: 0.5, braid: 0.6 },
+    uq_strike: { hip: [6, -66], lean: 58, ff: [-6, -62], bf: [-16, -52], fh: [24, -76], wa: 172, cape: 1.2, braid: 1.4, kneesBack: true },
+    uq_follow: { hip: [0, -62], lean: 20, ff: [12, -24], bf: [-8, -16], fh: [22, -78], wa: 60, cape: 0.8, braid: 1 },
   });
   return P;
 })();
+
+/**
+ * Derive a pose set from another character's: scale positions (kx, ky),
+ * swap the back-hand grip for this weapon, then apply per-pose overrides.
+ */
+function adapt(src, kx, ky, backGrip, overrides) {
+  const S = (p) => [p[0] * kx, p[1] * ky];
+  const out = {};
+  for (const [n, P] of Object.entries(src)) {
+    const q = { ...P, hip: S(P.hip), ff: S(P.ff), bf: S(P.bf), fh: S(P.fh) };
+    if (Array.isArray(P.bh)) q.bh = S(P.bh);
+    else q.bh = backGrip;
+    if (P.smear) q.smear = { ...P.smear, c: S(P.smear.c), r0: P.smear.r0 * kx, r1: P.smear.r1 * kx };
+    out[n] = q;
+  }
+  for (const [n, o] of Object.entries(overrides)) out[n] = { ...(out[n] ?? {}), ...o };
+  return out;
+}
+
+const SKOPOS_POSES = adapt(BELLA_POSES, 0.9, 0.85, -6, {
+  // Whirling Blade: a two-frame spin
+  sp1_wind: { hip: [-3, -44], lean: 8, ff: [14, 0], bf: [-16, 0], fh: [-8, -50], wa: -100, bh: -6, cape: 0.4 },
+  sp1_strike: { hip: [4, -43], lean: 14, ff: [20, 0], bf: [-14, 0], fh: [28, -52], wa: 92, bh: -6, cape: 1, smear: { c: [4, -52], r0: 26, r1: 44, a0: -80, a1: 95 } },
+  sp1_strike2: { hip: [4, -43], lean: 6, ff: [16, 0], bf: [-18, 0], fh: [-18, -52], wa: -92, bh: -6, cape: -0.6, smear: { c: [4, -52], r0: 26, r1: 44, a0: 100, a1: 265 } },
+  sp1_follow: { hip: [3, -43], lean: 10, ff: [18, 0], bf: [-14, 0], fh: [22, -54], wa: 80, bh: -6, cape: 0.6 },
+  // Shadowstep: coil, then a low blur dash
+  uq_wind: { hip: [-2, -34], lean: 30, ff: [16, 0], bf: [-16, 0], fh: [8, -40], wa: 125, bh: -6, cape: 0.3 },
+  uq_strike: { hip: [6, -32], lean: 48, ff: [24, -2], bf: [-22, -5], fh: [-4, -36], wa: -118, bh: -6, cape: 1.4 },
+  uq_follow: { hip: [2, -40], lean: 12, ff: [16, 0], bf: [-14, 0], fh: [18, -54], wa: 62, bh: -6, cape: 0.6 },
+  win0: { hip: [0, -45], lean: 0, ff: [12, 0], bf: [-13, 0], fh: [10, -84], wa: 4, bh: [-6, -50], cape: 0.2 },
+  win1: { hip: [0, -45], lean: 0, ff: [12, 0], bf: [-13, 0], fh: [12, -86], wa: -6, bh: [-6, -50], cape: 0.3 },
+});
+
+const BJORN_POSES = adapt(HERC_POSES, 0.95, 0.8, undefined, {
+  // Thunderclap: hammer up, then slam the ground
+  sp1_wind: { hip: [-3, -26], lean: -12, ff: [10, 0], bf: [-12, 0], fh: [-4, -58], wa: -30, bh: [8, -40] },
+  sp1_strike: { hip: [4, -20], lean: 30, ff: [16, 0], bf: [-11, 0], fh: [22, -10], wa: 150, bh: [6, -28], smear: { c: [6, -34], r0: 16, r1: 30, a0: -20, a1: 150 } },
+  sp1_follow: { hip: [3, -20], lean: 26, ff: [16, 0], bf: [-11, 0], fh: [20, -9], wa: 160, bh: [6, -26] },
+  // Storm Charge: hammer to the sky, catch the lightning, flex
+  uq_wind: { hip: [0, -25], lean: -4, ff: [9, 0], bf: [-10, 0], fh: [6, -60], wa: 0, bh: [-6, -56] },
+  uq_strike: { hip: [0, -26], lean: -10, ff: [10, 0], bf: [-11, 0], fh: [4, -64], wa: -6, bh: [-10, -58], head: -6 },
+  uq_follow: { hip: [0, -26], lean: 4, ff: [9, 0], bf: [-10, 0], fh: [13, -46], wa: 30, bh: [-10, -44] },
+});
+
+const POSES = { herc: HERC_POSES, bella: BELLA_POSES, skopos: SKOPOS_POSES, bjorn: BJORN_POSES };
+export const FIGHTER_IDS = Object.keys(POSES);
 
 // ---------------------------------------------------------------- build --
 
@@ -484,7 +663,7 @@ const KEY = Object.fromEntries(Object.entries(PALETTE_ROLES).map(([k, v]) => [k,
 
 export function buildFighter(root, id, previewPalette) {
   const ch = CHARS[id];
-  const poses = id === 'herc' ? HERC_POSES : BELLA_POSES;
+  const poses = POSES[id];
   const names = Object.keys(poses);
   const rows = Math.ceil(names.length / COLS);
   const W = FW * COLS;

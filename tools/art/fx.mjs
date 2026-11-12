@@ -183,7 +183,42 @@ function buildFx(root) {
   writeFile(join(root, 'public/assets/ui/fx.png'), cv.png());
 }
 
+/** Lightning bolt: 4 frames, 40x160, struck from the top down to the floor. */
+function buildBolt(root) {
+  const W = 40;
+  const H = 160;
+  const cv = new RgbCanvas(W * 4, H);
+  const R = rng(5);
+  for (let f = 0; f < 4; f++) {
+    const ox = f * W;
+    const pts = [[ox + 20, 0]];
+    let x = 20;
+    for (let y = 12; y < H; y += 10 + R() * 8) {
+      x = Math.max(8, Math.min(32, x + (R() - 0.5) * 18));
+      pts.push([ox + x, Math.min(H - 1, y)]);
+    }
+    pts.push([ox + 20, H - 1]);
+    const seg = (w, c, a) => {
+      for (let i = 0; i < pts.length - 1; i++) {
+        const [x0, y0] = pts[i];
+        const [x1, y1] = pts[i + 1];
+        const n = Math.ceil(Math.hypot(x1 - x0, y1 - y0));
+        for (let k = 0; k <= n; k++) cv.disc(x0 + ((x1 - x0) * k) / n, y0 + ((y1 - y0) * k) / n, w, c, a);
+      }
+    };
+    if (f < 3) {
+      seg(5, [120, 180, 255], 60);
+      seg(2.6, [140, 210, 255]);
+      seg(1.2, [255, 255, 255]);
+    } else seg(1.5, [140, 210, 255], 160);
+    // ground splash
+    for (let k = 0; k < 7; k++) cv.disc(ox + 20 + (k - 3) * 4, H - 4 - (k % 2) * 3, 2.5, [200, 230, 255], 200);
+  }
+  writeFile(join(root, 'public/assets/ui/bolt.png'), cv.png());
+}
+
 export function buildUi(root) {
   buildFont(root);
   buildFx(root);
+  buildBolt(root);
 }

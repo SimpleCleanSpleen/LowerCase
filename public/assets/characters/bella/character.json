@@ -191,6 +191,18 @@
         "vx": 150,
         "vy": -240
       }
+    },
+    "unique": {
+      "name": "Guardian Vault",
+      "kind": "vault",
+      "startup": 8,
+      "active": 1,
+      "recovery": 1,
+      "vault": {
+        "vx": 200,
+        "vy": -560
+      },
+      "pose": "uq"
     }
   },
   "skins": [

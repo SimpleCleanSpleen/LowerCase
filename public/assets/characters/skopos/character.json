@@ -1,0 +1,256 @@
+{
+  "id": "skopos",
+  "displayName": "Skopos",
+  "heightPx": 96,
+  "maxHp": 150,
+  "physics": {
+    "walkFwd": 135,
+    "walkBack": 110,
+    "jumpVelocity": -500,
+    "gravity": 1400,
+    "jumpSpeed": 145,
+    "jumpSquat": 4,
+    "landing": 3,
+    "dashF": {
+      "frames": 14,
+      "speed": 280
+    },
+    "dashB": {
+      "frames": 16,
+      "speed": 230,
+      "invuln": 5
+    }
+  },
+  "boxes": {
+    "stand": {
+      "w": 40,
+      "h": 94
+    },
+    "crouch": {
+      "w": 46,
+      "h": 62
+    },
+    "air": {
+      "w": 38,
+      "h": 74,
+      "y": -8
+    },
+    "push": {
+      "w": 32
+    },
+    "throwRange": 16
+  },
+  "moves": {
+    "high": {
+      "name": "Crest Cleave",
+      "guard": "high",
+      "baseDamage": 13,
+      "maxDamage": 26,
+      "maxCharge": 30,
+      "startup": 9,
+      "active": 4,
+      "recovery": 15,
+      "hitstun": 21,
+      "blockstun": 16,
+      "pushHit": 14,
+      "pushBlock": 14,
+      "hitbox": {
+        "x": 44,
+        "y": -50,
+        "w": 34,
+        "h": 46
+      },
+      "pose": "high"
+    },
+    "mid": {
+      "name": "Lunge",
+      "guard": "mid",
+      "baseDamage": 11,
+      "maxDamage": 22,
+      "maxCharge": 20,
+      "startup": 7,
+      "active": 3,
+      "recovery": 12,
+      "hitstun": 17,
+      "blockstun": 14,
+      "pushHit": 12,
+      "pushBlock": 14,
+      "hitbox": {
+        "x": 50,
+        "y": -54,
+        "w": 38,
+        "h": 14
+      },
+      "pose": "mid"
+    },
+    "low": {
+      "name": "Shin Cutter",
+      "guard": "low",
+      "crouch": true,
+      "baseDamage": 9,
+      "maxDamage": 18,
+      "maxCharge": 25,
+      "startup": 8,
+      "active": 3,
+      "recovery": 13,
+      "hitstun": 17,
+      "blockstun": 13,
+      "pushHit": 12,
+      "pushBlock": 14,
+      "hitbox": {
+        "x": 46,
+        "y": -9,
+        "w": 44,
+        "h": 16
+      },
+      "pose": "low"
+    },
+    "air": {
+      "name": "Falling Edge",
+      "guard": "high",
+      "baseDamage": 12,
+      "maxDamage": 12,
+      "maxCharge": 0,
+      "startup": 7,
+      "active": 6,
+      "recovery": 10,
+      "hitstun": 18,
+      "blockstun": 12,
+      "pushHit": 8,
+      "pushBlock": 10,
+      "hitbox": {
+        "x": 32,
+        "y": -36,
+        "w": 38,
+        "h": 34
+      },
+      "pose": "air"
+    },
+    "sp1": {
+      "name": "Whirling Blade",
+      "motion": "qcf",
+      "kind": "rush",
+      "guard": "mid",
+      "baseDamage": 9,
+      "startup": 10,
+      "active": 16,
+      "recovery": 22,
+      "speed": 200,
+      "multiHit": {
+        "count": 2,
+        "interval": 8
+      },
+      "knockdownLast": true,
+      "chip": 1,
+      "hitstun": 20,
+      "blockstun": 12,
+      "pushHit": 6,
+      "pushBlock": 18,
+      "hitbox": {
+        "x": 18,
+        "y": -48,
+        "w": 56,
+        "h": 50
+      },
+      "pose": "sp1"
+    },
+    "sp2": {
+      "name": "Rising Edge",
+      "motion": "dp",
+      "kind": "rise",
+      "guard": "mid",
+      "baseDamage": 16,
+      "startup": 4,
+      "active": 9,
+      "recovery": 14,
+      "landing": 12,
+      "invuln": 6,
+      "rise": {
+        "vx": 30,
+        "vy": -400
+      },
+      "launch": {
+        "vx": 55,
+        "vy": -410
+      },
+      "knockdown": true,
+      "hitstun": 0,
+      "blockstun": 16,
+      "pushHit": 0,
+      "pushBlock": 14,
+      "hitbox": {
+        "x": 22,
+        "y": -80,
+        "w": 36,
+        "h": 60
+      },
+      "pose": "sp2"
+    },
+    "unique": {
+      "name": "Shadowstep",
+      "kind": "step",
+      "startup": 5,
+      "active": 12,
+      "recovery": 10,
+      "speed": 420,
+      "pose": "uq"
+    },
+    "throw": {
+      "name": "Pommel Bash",
+      "damage": 18,
+      "startup": 2,
+      "duration": 28,
+      "releaseAt": 12,
+      "launch": {
+        "vx": 150,
+        "vy": -250
+      }
+    }
+  },
+  "skins": [
+    {
+      "id": "aegean",
+      "name": "Aegean Watch",
+      "colors": {
+        "outline": "#141820",
+        "visor": "#1e2028",
+        "skin": "#c08a66",
+        "skinShade": "#94603f",
+        "hair": "#3a2418",
+        "armor": "#a4aebc",
+        "armorShade": "#646e7e",
+        "trim": "#d8a050",
+        "sigil": "#2a8a8a",
+        "cape": "#2a8a8a",
+        "armorLight": "#e4eaf2",
+        "capeShade": "#1a5a5a",
+        "steel": "#e0e4ee",
+        "steelShade": "#8a90a4",
+        "wood": "#5a3a22",
+        "woodShade": "#3a2414"
+      }
+    },
+    {
+      "id": "owl",
+      "name": "Night Owl",
+      "colors": {
+        "outline": "#0e0e16",
+        "visor": "#1a1a24",
+        "skin": "#c08a66",
+        "skinShade": "#94603f",
+        "hair": "#3a2418",
+        "armor": "#4a4a5e",
+        "armorShade": "#2e2e3c",
+        "trim": "#c8c8d8",
+        "sigil": "#b08ae8",
+        "cape": "#6a2a8a",
+        "armorLight": "#7c7c96",
+        "capeShade": "#401a58",
+        "steel": "#c8d0e0",
+        "steelShade": "#6a7488",
+        "wood": "#2a2a34",
+        "woodShade": "#1a1a22"
+      }
+    }
+  ]
+}

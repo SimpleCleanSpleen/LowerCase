@@ -46,6 +46,9 @@
   "down": 39,
   "getup": 40,
   "win0": 41,
-  "win1": 42
+  "win1": 42,
+  "uq_wind": 43,
+  "uq_strike": 44,
+  "uq_follow": 45
  }
 }

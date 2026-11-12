@@ -134,7 +134,7 @@
       "baseDamage": 16,
       "startup": 12,
       "active": 18,
-      "recovery": 18,
+      "recovery": 22,
       "speed": 300,
       "knockdown": true,
       "chip": 2,
@@ -193,6 +193,22 @@
         "vx": 160,
         "vy": -260
       }
+    },
+    "unique": {
+      "name": "Grudge Counter",
+      "kind": "counter",
+      "startup": 3,
+      "active": 7,
+      "recovery": 28,
+      "counter": {
+        "damage": 16,
+        "launch": {
+          "vx": 150,
+          "vy": -340
+        },
+        "frames": 26
+      },
+      "pose": "uq"
     }
   },
   "skins": [

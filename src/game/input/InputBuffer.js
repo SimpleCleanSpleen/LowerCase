@@ -9,7 +9,7 @@
  * Button presses are buffered for a few ticks so inputs made during hitstop
  * or a frame early still come out (standard fighting-game leniency).
  */
-const BUTTONS = ['high', 'mid', 'low'];
+export const BUTTONS = ['high', 'mid', 'low', 'special', 'throw', 'unique'];
 const SIZE = 64;
 export const PRESS_BUFFER = 5;
 const MOTION_WINDOW = 16;
@@ -22,7 +22,7 @@ const MOTIONS = {
 export class InputBuffer {
   constructor() {
     this.frames = [];
-    this.prevHeld = { high: false, mid: false, low: false };
+    this.prevHeld = Object.fromEntries(BUTTONS.map((b) => [b, false]));
     this.clock = 0; // advances only on unfrozen ticks, so hitstop doesn't eat buffered presses
   }
 
@@ -36,10 +36,10 @@ export class InputBuffer {
     const dir = 5 + h + v * 3;
     const pressed = {};
     for (const b of BUTTONS) {
-      pressed[b] = pad[b] && !this.prevHeld[b];
-      this.prevHeld[b] = pad[b];
+      pressed[b] = !!pad[b] && !this.prevHeld[b];
+      this.prevHeld[b] = !!pad[b];
     }
-    this.frames.push({ t: this.clock, dir, pressed, held: { high: pad.high, mid: pad.mid, low: pad.low } });
+    this.frames.push({ t: this.clock, dir, pressed, held: Object.fromEntries(BUTTONS.map((b) => [b, !!pad[b]])) });
     if (this.frames.length > SIZE) this.frames.shift();
   }
 

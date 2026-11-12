@@ -1,0 +1,250 @@
+{
+  "id": "bjorn",
+  "displayName": "Bjorn",
+  "heightPx": 72,
+  "maxHp": 170,
+  "physics": {
+    "walkFwd": 135,
+    "walkBack": 100,
+    "jumpVelocity": -440,
+    "gravity": 1500,
+    "jumpSpeed": 140,
+    "jumpSquat": 4,
+    "landing": 4,
+    "dashF": {
+      "frames": 16,
+      "speed": 250
+    },
+    "dashB": {
+      "frames": 18,
+      "speed": 210,
+      "invuln": 5
+    }
+  },
+  "boxes": {
+    "stand": {
+      "w": 46,
+      "h": 72
+    },
+    "crouch": {
+      "w": 52,
+      "h": 50
+    },
+    "air": {
+      "w": 42,
+      "h": 58,
+      "y": -8
+    },
+    "push": {
+      "w": 36
+    },
+    "throwRange": 16
+  },
+  "moves": {
+    "high": {
+      "name": "Anvil Drop",
+      "guard": "high",
+      "baseDamage": 16,
+      "maxDamage": 32,
+      "maxCharge": 30,
+      "startup": 11,
+      "active": 4,
+      "recovery": 17,
+      "hitstun": 22,
+      "blockstun": 18,
+      "pushHit": 14,
+      "pushBlock": 12,
+      "hitbox": {
+        "x": 34,
+        "y": -40,
+        "w": 34,
+        "h": 42
+      },
+      "pose": "high"
+    },
+    "mid": {
+      "name": "Belly Bonk",
+      "guard": "mid",
+      "baseDamage": 12,
+      "maxDamage": 24,
+      "maxCharge": 20,
+      "startup": 7,
+      "active": 3,
+      "recovery": 13,
+      "hitstun": 18,
+      "blockstun": 16,
+      "pushHit": 12,
+      "pushBlock": 10,
+      "hitbox": {
+        "x": 30,
+        "y": -40,
+        "w": 28,
+        "h": 18
+      },
+      "pose": "mid"
+    },
+    "low": {
+      "name": "Toe Thumper",
+      "guard": "low",
+      "crouch": true,
+      "baseDamage": 11,
+      "maxDamage": 22,
+      "maxCharge": 25,
+      "startup": 9,
+      "active": 4,
+      "recovery": 14,
+      "hitstun": 18,
+      "blockstun": 15,
+      "pushHit": 12,
+      "pushBlock": 10,
+      "hitbox": {
+        "x": 34,
+        "y": -8,
+        "w": 36,
+        "h": 16
+      },
+      "pose": "low"
+    },
+    "air": {
+      "name": "Skydrop",
+      "guard": "high",
+      "baseDamage": 13,
+      "maxDamage": 13,
+      "maxCharge": 0,
+      "startup": 8,
+      "active": 6,
+      "recovery": 10,
+      "hitstun": 18,
+      "blockstun": 12,
+      "pushHit": 8,
+      "pushBlock": 10,
+      "hitbox": {
+        "x": 20,
+        "y": -22,
+        "w": 32,
+        "h": 30
+      },
+      "pose": "air"
+    },
+    "sp1": {
+      "name": "Thunderclap",
+      "motion": "qcf",
+      "kind": "strike",
+      "guard": "mid",
+      "baseDamage": 13,
+      "startup": 16,
+      "active": 2,
+      "recovery": 20,
+      "chip": 2,
+      "hitstun": 20,
+      "blockstun": 14,
+      "pushHit": 10,
+      "pushBlock": 12,
+      "strike": {
+        "distance": 120,
+        "w": 26,
+        "h": 150,
+        "life": 12
+      },
+      "pose": "sp1"
+    },
+    "sp2": {
+      "name": "Rumble Rise",
+      "motion": "dp",
+      "kind": "rise",
+      "guard": "mid",
+      "baseDamage": 17,
+      "startup": 5,
+      "active": 8,
+      "recovery": 14,
+      "landing": 12,
+      "invuln": 6,
+      "rise": {
+        "vx": 30,
+        "vy": -360
+      },
+      "launch": {
+        "vx": 60,
+        "vy": -400
+      },
+      "knockdown": true,
+      "hitstun": 0,
+      "blockstun": 16,
+      "pushHit": 0,
+      "pushBlock": 14,
+      "hitbox": {
+        "x": 16,
+        "y": -58,
+        "w": 32,
+        "h": 50
+      },
+      "pose": "sp2"
+    },
+    "unique": {
+      "name": "Storm Charge",
+      "kind": "buff",
+      "startup": 10,
+      "active": 14,
+      "recovery": 14,
+      "duration": 300,
+      "pose": "uq"
+    },
+    "throw": {
+      "name": "Beard Bonk",
+      "damage": 20,
+      "startup": 2,
+      "duration": 28,
+      "releaseAt": 12,
+      "launch": {
+        "vx": 160,
+        "vy": -260
+      }
+    }
+  },
+  "skins": [
+    {
+      "id": "storm",
+      "name": "Stormcloud",
+      "colors": {
+        "outline": "#1a1414",
+        "visor": "#2a2024",
+        "skin": "#f0b8a0",
+        "skinShade": "#c88a78",
+        "hair": "#d8602a",
+        "armor": "#8a8f98",
+        "armorShade": "#5a5e66",
+        "trim": "#e0b040",
+        "sigil": "#ffe060",
+        "cape": "#3a6ac8",
+        "armorLight": "#c8ccd4",
+        "capeShade": "#23458a",
+        "steel": "#e8ecf0",
+        "steelShade": "#a0a4ac",
+        "wood": "#6a4628",
+        "woodShade": "#44301a"
+      }
+    },
+    {
+      "id": "mead",
+      "name": "Mead Hall",
+      "colors": {
+        "outline": "#1a1008",
+        "visor": "#2a1a10",
+        "skin": "#f0b8a0",
+        "skinShade": "#c88a78",
+        "hair": "#f0d070",
+        "armor": "#7a5432",
+        "armorShade": "#4e341e",
+        "trim": "#c8c8d0",
+        "sigil": "#ffd24a",
+        "cape": "#8a1a1a",
+        "armorLight": "#a87c50",
+        "capeShade": "#5a0e0e",
+        "steel": "#dcdcdc",
+        "steelShade": "#989898",
+        "wood": "#4a3020",
+        "woodShade": "#2e1e14"
+      }
+    }
+  ]
+}

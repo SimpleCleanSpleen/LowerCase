@@ -38,6 +38,7 @@ export class FighterSim {
       invuln: 0, slide: 0, slideDir: 0, juggle: 0,
       comboHits: 0, comboDamage: 0, flash: 0, flashBlocked: false,
       grabbed: null, thrownBy: null, throwBack: false,
+      hitsLanded: 0, lastContactAt: -99, buff: 0, vaultT: 0,
       actionableAt: 0, now: 0,
     });
     this.input.clear();
@@ -56,10 +57,14 @@ export class FighterSim {
     if (this.state === 'attack') return !!this.move?.crouch;
     return this.crouching || this.state === 'jumpSquat' || this.state === 'land';
   }
+  /** Passing through the opponent (Shadowstep): no pushbox collision. */
+  get ghost() {
+    return this.state === 'attack' && this.move?.kind === 'step' && this.phase !== 'recovery';
+  }
   strikeInvulnerable() {
     return (
       this.invuln > 0 ||
-      this.state === 'down' || this.state === 'getup' || this.state === 'thrown' || this.state === 'ko' ||
+      this.state === 'down' || this.state === 'getup' || this.state === 'thrown' || this.state === 'ko' || this.state === 'counterStrike' ||
       (this.state === 'launch' && this.juggle >= MAX_JUGGLE)
     );
   }
@@ -98,6 +103,8 @@ export class FighterSim {
     this.pf++;
     if (this.invuln > 0) this.invuln--;
     if (this.flash > 0) this.flash--;
+    if (this.buff > 0) this.buff--;
+    if (this.vaultT > 0) this.vaultT--;
     const P = this.def.physics;
 
     switch (this.state) {
@@ -143,6 +150,12 @@ export class FighterSim {
       case 'throw':
         this.tickThrow(opp, world);
         break;
+      case 'throwWhiff':
+        if (this.pf > 22) this.toNeutral(opp);
+        break;
+      case 'counterStrike':
+        if (this.pf > this.def.moves.unique.counter.frames) this.toNeutral(opp);
+        break;
       default:
         break;
     }
@@ -184,8 +197,11 @@ export class FighterSim {
     const press = I.peekPress();
     if (press) {
       I.consume(press);
-      if (press.btn === 'mid' && (I.fwd || I.back) && this.canThrow(opp)) return this.startThrow(opp, I.back, world);
-      return this.startMove(this.specialFor(press, world) ?? press.btn, world);
+      if (press.btn === 'throw') return this.canThrow(opp) ? this.startThrow(opp, I.back, world) : this.whiffThrow(world);
+      if (press.btn === 'unique') return this.startMove('unique', world);
+      const sp = this.specialFor(press, world);
+      if (sp) return this.startMove(sp, world);
+      if (press.btn !== 'special') return this.startMove(press.btn, world);
     }
     if (I.doubleTap(6) || I.doubleTap(4)) {
       const fwd = I.doubleTap(6);
@@ -231,18 +247,21 @@ export class FighterSim {
     const press = this.input.peekPress();
     if (!press) return;
     this.input.consume(press);
+    if (!(press.btn in CHAIN_RANK)) return;
     this.airAttackUsed = true;
     this.startMove('air', world);
   }
 
   /** Special move id if a motion input preceded this press (DP beats QCF). */
   specialFor(press, world) {
-    for (const id of ['sp2', 'sp1']) {
+    const usable = (id) => {
       const m = this.def.moves[id];
-      if (!m || !this.input.motion(m.motion, press.index)) continue;
-      if (m.kind === 'projectile' && world.hasProjectile(this)) continue;
-      return id;
-    }
+      return m && !((m.kind === 'projectile' || m.kind === 'strike') && world.hasProjectile(this));
+    };
+    // DP motion + any attack/special button; QCF motion + attack, or just the Special button.
+    if (this.input.motion('dp', press.index) && press.btn !== 'throw' && press.btn !== 'unique' && usable('sp2')) return 'sp2';
+    if (press.btn === 'special' && usable('sp1')) return 'sp1';
+    if (press.btn in CHAIN_RANK && this.input.motion('qcf', press.index) && usable('sp1')) return 'sp1';
     return null;
   }
 
@@ -259,11 +278,14 @@ export class FighterSim {
     this.chargeLatch = !!m.maxCharge && this.input.held(id);
     this.contact = null;
     this.spawned = false;
+    this.hitsLanded = 0;
+    this.lastContactAt = -99;
     if (this.grounded) {
       this.vx = 0;
       this.crouching = !!m.crouch;
     }
     if (m.invuln) this.invuln = m.invuln;
+    if (m.kind === 'step') this.invuln = m.startup + m.active + 2;
     world.emit({ type: 'startup', fighter: this, move: id });
   }
 
@@ -284,12 +306,12 @@ export class FighterSim {
     }
     if (this.phase === 'active') {
       if (this.pf <= m.active) {
-        if (m.kind === 'rush') this.vx = this.facing * m.speed;
+        if (m.kind === 'rush' || m.kind === 'step') this.vx = this.facing * m.speed;
         return this.tryCancel(opp, world);
       }
       this.phase = 'recovery';
       this.pf = 1;
-      if (m.kind === 'rush') this.vx = 0;
+      if (m.kind === 'rush' || m.kind === 'step') this.vx = 0;
     }
     if (this.phase === 'recovery') {
       if (m.kind === 'rise' && !this.grounded) {
@@ -311,9 +333,20 @@ export class FighterSim {
       this.vy = m.rise.vy;
       this.vx = this.facing * m.rise.vx;
     }
-    if (m.kind === 'projectile' && !this.spawned) {
+    if ((m.kind === 'projectile' || m.kind === 'strike') && !this.spawned) {
       this.spawned = true;
       world.spawnProjectile(this, m);
+    }
+    if (m.kind === 'vault') {
+      this.vy = m.vault.vy;
+      this.vx = this.facing * m.vault.vx;
+      this.airAttackUsed = false;
+      this.vaultT = 22;
+      world.emit({ type: 'dash', fighter: this });
+    }
+    if (m.kind === 'buff') {
+      this.buff = m.duration;
+      world.emit({ type: 'storm', fighter: this });
     }
     world.emit({ type: 'swing', fighter: this, heavy: this.fullyCharged || this.moveId === 'high' });
   }
@@ -329,7 +362,7 @@ export class FighterSim {
       this.input.consume(press);
       return this.startMove(sp, world);
     }
-    if (CHAIN_RANK[press.btn] > CHAIN_RANK[this.moveId]) {
+    if (press.btn in CHAIN_RANK && CHAIN_RANK[press.btn] > CHAIN_RANK[this.moveId]) {
       this.input.consume(press);
       this.startMove(press.btn, world);
     }
@@ -358,6 +391,22 @@ export class FighterSim {
     opp.vy = 0;
     opp.thrownBy = this;
     world.emit({ type: 'grab', fighter: this });
+  }
+
+  whiffThrow(world) {
+    this.setState('throwWhiff');
+    this.move = null;
+    this.vx = 0;
+    world.emit({ type: 'swing', fighter: this, heavy: false });
+  }
+
+  /** Herc's Grudge Counter caught a strike: punish instead of getting hit. */
+  counterStrike() {
+    this.move = null;
+    this.moveId = null;
+    this.phase = null;
+    this.vx = 0;
+    this.setState('counterStrike');
   }
 
   tickThrow(opp, world) {

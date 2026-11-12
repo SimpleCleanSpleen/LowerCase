@@ -103,6 +103,16 @@ export const Sfx = {
     tone('sine', 120, 30, 1.2, 1);
     hiss(0.8, 0.5, 'lowpass', 1800, 80);
   },
+  thunder() {
+    hiss(0.5, 0.7, 'lowpass', 2400, 90);
+    tone('sawtooth', 80, 35, 0.5, 0.35);
+    hiss(0.08, 0.5, 'highpass', 4000, 8000);
+  },
+  counter() {
+    tone('triangle', 1800, 1200, 0.25, 0.3);
+    tone('square', 900, 1350, 0.12, 0.15, 0.03);
+    hiss(0.12, 0.3, 'highpass', 2500, 6000);
+  },
   announce() {
     tone('square', 523, 523, 0.08, 0.12);
     tone('square', 784, 784, 0.14, 0.12, 0.08);
