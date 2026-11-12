@@ -1,0 +1,46 @@
+{
+  "id": "bella",
+  "displayName": "Bella",
+  "heightPx": 84,
+  "sheet": "sheet.png",
+  "frameWidth": 64,
+  "frameHeight": 96,
+  "footY": 94,
+  "animations": {
+    "idle": { "frames": [0, 1, 2, 3], "frameRate": 4, "repeat": -1 }
+  },
+  "skins": [
+    {
+      "id": "royal",
+      "name": "Royal Dawn",
+      "colors": {
+        "outline": "#14121c",
+        "visor": "#24202e",
+        "skin": "#6b4226",
+        "skinShade": "#4a2c18",
+        "hair": "#1a1210",
+        "armor": "#d8dce6",
+        "armorShade": "#9aa0b4",
+        "trim": "#e8c060",
+        "sigil": "#c8283c",
+        "cape": "#2c5cc8"
+      }
+    },
+    {
+      "id": "rose",
+      "name": "Rose Garden",
+      "colors": {
+        "outline": "#2a1420",
+        "visor": "#3a2030",
+        "skin": "#6b4226",
+        "skinShade": "#4a2c18",
+        "hair": "#1a1210",
+        "armor": "#f2dce4",
+        "armorShade": "#c49aac",
+        "trim": "#f8f8f8",
+        "sigil": "#d0487a",
+        "cape": "#d0487a"
+      }
+    }
+  ]
+}

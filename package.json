@@ -1,0 +1,18 @@
+{
+  "name": "uppercase",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "gen:placeholders": "node tools/gen-placeholders.mjs"
+  },
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "vite": "6.4.5"
+  }
+}

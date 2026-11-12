@@ -1,0 +1,46 @@
+{
+  "id": "herc",
+  "displayName": "Herc",
+  "heightPx": 60,
+  "sheet": "sheet.png",
+  "frameWidth": 64,
+  "frameHeight": 96,
+  "footY": 94,
+  "animations": {
+    "idle": { "frames": [0, 1, 2, 3], "frameRate": 5, "repeat": -1 }
+  },
+  "skins": [
+    {
+      "id": "crimson",
+      "name": "Crimson Crest",
+      "colors": {
+        "outline": "#1a1012",
+        "visor": "#2b1d24",
+        "skin": "#b5764c",
+        "skinShade": "#8a5434",
+        "hair": "#2a1a14",
+        "armor": "#b8bcc8",
+        "armorShade": "#7a7f92",
+        "trim": "#e0b040",
+        "sigil": "#c8283c",
+        "cape": "#c8283c"
+      }
+    },
+    {
+      "id": "midnight",
+      "name": "Midnight Bull",
+      "colors": {
+        "outline": "#0e0f18",
+        "visor": "#1c1e2c",
+        "skin": "#b5764c",
+        "skinShade": "#8a5434",
+        "hair": "#2a1a14",
+        "armor": "#3e4466",
+        "armorShade": "#272b44",
+        "trim": "#a8b2c8",
+        "sigil": "#3fd0c0",
+        "cape": "#2a8c7a"
+      }
+    }
+  ]
+}
