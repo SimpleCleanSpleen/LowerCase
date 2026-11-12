@@ -9,6 +9,29 @@
   "animations": {
     "idle": { "frames": [0, 1, 2, 3], "frameRate": 4, "repeat": -1 }
   },
+  "physics": { "walkSpeed": 90, "jumpVelocity": -550, "gravity": 1200 },
+  "hurtbox": { "w": 48, "h": 84 },
+  "block": { "startup": 2, "recovery": 4 },
+  "moves": {
+    "high": {
+      "name": "Downward Cleave",
+      "baseDamage": 12, "maxDamage": 24, "maxCharge": 30,
+      "startup": 8, "active": 4, "recovery": 14,
+      "hitbox": { "w": 20, "h": 40, "x": 30, "y": -30 }
+    },
+    "mid": {
+      "name": "Long Thrust",
+      "baseDamage": 10, "maxDamage": 20, "maxCharge": 20,
+      "startup": 6, "active": 4, "recovery": 10,
+      "hitbox": { "w": 40, "h": 20, "x": 35, "y": -10 }
+    },
+    "low": {
+      "name": "Sweeping Strike",
+      "baseDamage": 8, "maxDamage": 16, "maxCharge": 25,
+      "startup": 7, "active": 3, "recovery": 12,
+      "hitbox": { "w": 45, "h": 15, "x": 30, "y": 35 }
+    }
+  },
   "skins": [
     {
       "id": "royal",

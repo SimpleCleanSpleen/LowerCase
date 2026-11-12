@@ -58,4 +58,25 @@ export class Fighter extends Phaser.GameObjects.Sprite {
   nextSkin() {
     return this.setSkin(this.skinIndex + 1);
   }
+
+  /**
+   * Mirror a FighterSim's state. Until attack/block animations exist, tints
+   * stand in for them: white flash = hit, blue flash = blocked hit,
+   * blue = blocking, orange (deepening) = charging.
+   */
+  sync(sim) {
+    this.setPosition(Math.round(sim.x), Math.round(sim.y));
+    if (sim.facing !== this.facing) this.setFacing(sim.facing);
+
+    if (sim.flash > 2) {
+      this.setTintFill(sim.flashBlocked ? 0x99ccff : 0xffffff);
+    } else if (sim.state === 'blockStartup' || sim.state === 'block') {
+      this.setTint(0x8fb4ff);
+    } else if (sim.phase === 'startup' && sim.charge > 0) {
+      const t = sim.charge / sim.move.maxCharge;
+      this.setTint(Phaser.Display.Color.GetColor(255, 255 - 100 * t, 255 - 210 * t));
+    } else {
+      this.clearTint();
+    }
+  }
 }

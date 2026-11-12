@@ -9,6 +9,29 @@
   "animations": {
     "idle": { "frames": [0, 1, 2, 3], "frameRate": 5, "repeat": -1 }
   },
+  "physics": { "walkSpeed": 110, "jumpVelocity": -450, "gravity": 1200 },
+  "hurtbox": { "w": 40, "h": 60 },
+  "block": { "startup": 2, "recovery": 4 },
+  "moves": {
+    "high": {
+      "name": "Overhead Smash",
+      "baseDamage": 15, "maxDamage": 30, "maxCharge": 30,
+      "startup": 10, "active": 4, "recovery": 16,
+      "hitbox": { "w": 30, "h": 30, "x": 20, "y": -20 }
+    },
+    "mid": {
+      "name": "Gut Punch",
+      "baseDamage": 12, "maxDamage": 24, "maxCharge": 20,
+      "startup": 8, "active": 3, "recovery": 12,
+      "hitbox": { "w": 25, "h": 20, "x": 20, "y": 0 }
+    },
+    "low": {
+      "name": "Ankle Cleaver",
+      "baseDamage": 10, "maxDamage": 20, "maxCharge": 25,
+      "startup": 9, "active": 4, "recovery": 14,
+      "hitbox": { "w": 35, "h": 15, "x": 20, "y": 25 }
+    }
+  },
   "skins": [
     {
       "id": "crimson",

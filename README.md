@@ -10,6 +10,26 @@ npm run preview           # serve dist/ locally
 npm run gen:placeholders  # regenerate placeholder sprite sheets
 ```
 
+## Controls (training stage)
+
+| | P1 Herc | P2 Bella |
+|---|---|---|
+| Walk | A / D | J / L |
+| Jump | W | I |
+| Block (hold) | S | K |
+| High attack | R | P |
+| Mid attack | F | ; |
+| Low attack | V | / |
+
+Hold an attack button to charge it. Hotkeys: **1** toggles hit/hurt boxes, **2** and **3** cycle Herc's and Bella's skins, **0** resets.
+
+## Combat model
+
+- The simulation runs at a fixed 60 Hz (`src/game/sim/`, no Phaser dependency), and all frame data is counted in those ticks.
+- Frame data, physics, hurtboxes and block timings live in each `character.json`.
+- Hitbox offsets go from the fighter's center (middle of the hurtbox) to the hitbox's center. +x is forward, +y is down.
+- Charging: holding the button after startup ends adds 1 charge per tick, up to `maxCharge`. Damage scales linearly from `baseDamage` to `maxDamage`.
+
 ## Layout
 
 ```
@@ -17,7 +37,7 @@ public/assets/characters/<id>/
   character.json     # frames, animations, skins (palettes); data only, no code
   sheet.png          # sprite sheet painted in KEY COLORS only
 src/
-  main.js            # Phaser config (384x216 logical res, pixelArt, FIT scaling)
+  main.js            # Phaser config (480x270 logical res, pixelArt, FIT scaling)
   game/constants.js  # resolution, floor, px-per-foot, ROSTER
   game/Fighter.js    # sprite wrapper: facing, anims, skin switching
   palette/roles.js   # palette roles -> key colors (shared with tools/)
