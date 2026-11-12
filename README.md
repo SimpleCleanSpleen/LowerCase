@@ -1,67 +1,70 @@
-# UpperCase
+# UpperCase: Knights of the Sigil
 
-2D pixel-art fighting game. Static site built with **Phaser 3** and **Vite**, deployable to GitHub Pages or Firebase Hosting.
+A 2D pixel-art fighting game in the style of classic arcade fighters. It's a static site built with **Phaser 3** and **Vite**, deployable to GitHub Pages or Firebase Hosting.
 
 ```bash
 npm install
-npm run dev               # http://localhost:5173
-npm run build             # static output in dist/
-npm run preview           # serve dist/ locally
-npm run gen:placeholders  # regenerate placeholder sprite sheets
+npm run dev       # http://localhost:5173
+npm run build     # static output in dist/
+npm run gen:art   # regenerate all sprites, stages, font and effects
 ```
 
-## Controls (training stage)
+## Modes
 
-| | P1 Herc | P2 Bella |
-|---|---|---|
-| Walk | A / D | J / L |
-| Jump | W | I |
-| Block (hold) | S | K |
-| High attack | R | P |
-| Mid attack | F | ; |
-| Low attack | V | / |
+**Versus CPU** (Easy, Normal or Hard), **Versus Player** (one keyboard or gamepads), and **Training** (dummy settings, hitbox overlay, frame-advantage readout).
 
-Hold an attack button to charge it. Hotkeys: **1** toggles hit/hurt boxes, **2** and **3** cycle Herc's and Bella's skins, **0** resets.
+## Controls
 
-## Combat model
+| | Solo (vs CPU / training) | 2P: Player 1 | 2P: Player 2 | Gamepad |
+|---|---|---|---|---|
+| Move / jump / crouch | WASD or arrows | WASD | Arrows | D-pad / stick |
+| High / Mid / Low | I / J / K | R / F / V | O / K / , (or numpad 8 5 2) | Y / X / A |
+| Pause | Enter / Esc | Esc | Enter | Start |
 
-- The simulation runs at a fixed 60 Hz (`src/game/sim/`, no Phaser dependency), and all frame data is counted in those ticks.
-- Frame data, physics, hurtboxes and block timings live in each `character.json`.
-- Hitbox offsets go from the fighter's center (middle of the hurtbox) to the hitbox's center. +x is forward, +y is down.
-- Charging: holding the button after startup ends adds 1 charge per tick, up to `maxCharge`. Damage scales linearly from `baseDamage` to `maxDamage`.
+**M** mutes. In training, **1** toggles boxes and **2** cycles the dummy behavior.
 
-## Layout
+## How it plays
+
+- **Block** by holding back. Lows must be blocked crouching, and highs (overheads and jump-ins) standing. Mids can be blocked either way.
+- **Charge**: hold an attack button to charge it. Damage scales up to the move's max, and a full charge knocks the opponent down.
+- **Dash**: tap forward or back twice. Back dashes are briefly invulnerable.
+- **Throw**: forward or back + Mid at close range.
+- **Combos**: a normal that connects can chain into a stronger normal (low > mid > high) or cancel into a special move. Damage scales down over a combo.
+- **Specials**: QCF = ↓ ↘ → + attack, DP = → ↓ ↘ + attack.
+  - Herc: QCF **Bull Rush** (passes through projectiles), DP **Upper Case** (invulnerable uppercut).
+  - Bella: QCF **Sigil Wave** (projectile), DP **Rising Cleave** (invulnerable anti-air).
+- **Rounds**: best of 3, 60 seconds each. When time runs out, the fighter with more health remaining wins.
+
+## Architecture
 
 ```
-public/assets/characters/<id>/
-  character.json     # frames, animations, skins (palettes); data only, no code
-  sheet.png          # sprite sheet painted in KEY COLORS only
-src/
-  main.js            # Phaser config (480x270 logical res, pixelArt, FIT scaling)
-  game/constants.js  # resolution, floor, px-per-foot, ROSTER
-  game/Fighter.js    # sprite wrapper: facing, anims, skin switching
-  palette/roles.js   # palette roles -> key colors (shared with tools/)
-  palette/paletteSwap.js  # key-color sheet -> one recolored canvas per skin
-  assets/            # loading + key naming
-  scenes/            # Boot (JSON) -> Preload (sheets, build skins) -> Stage
-tools/gen-placeholders.mjs   # dependency-free placeholder art generator
+src/game/sim/        Deterministic 60 Hz simulation, no Phaser:
+  FighterSim.js      per-fighter state machine (movement, attacks, charge, cancels, stun, throws)
+  Match.js           hits/blocks, hitstop, pushboxes, projectiles, camera bounds, timer, rounds
+  boxes.js           hurt/hit/push boxes
+src/game/input/      keyboard + gamepad pads, input buffer with motion & double-tap detection
+src/game/ai/Cpu.js   CPU opponent (presses the same virtual buttons a human does)
+src/game/view/       sprites, parallax stages, HUD, effects, pixel text
+src/scenes/          Boot → Preload → Title → Select → Fight
+public/assets/
+  characters/<id>/character.json   design data: physics, boxes, frame data, skins
+  characters/<id>/sheet.png, art.json   generated sprite sheet (key colors) + pose index
+  stages/<id>/       generated parallax layers + stage.json
+  ui/                generated pixel font + effects sheet
+tools/art/           procedural pixel-art generators (rigged fighters, stages, font, fx)
 ```
 
-## Art and palette-swap contract
+Frame data is counted in fixed 60 Hz ticks, independent of display refresh rate. Hitbox offsets are in pixels from the fighter's feet: `{x, y}` is the center of the box, +x is forward and +y is down. Scale: 1 ft = 16 px.
 
-- **Scale:** 1 ft = 12 px. Herc (5'0") is 60 px tall and Bella (7'0") is 84 px.
-- **Frames:** 64×96 cells laid out left to right. Feet rest on row `footY` (94).
-- **Colors:** paint sheets using **only** the key colors in `src/palette/roles.js`
-  (`outline, visor, skin, skinShade, hair, armor, armorShade, trim, sigil, cape`)
-  plus full transparency. Use no anti-aliasing or semi-transparent edges.
-- **Skins:** each entry in `character.json → skins[]` maps every role to a color.
-  At load time every skin is baked into its own texture, so runtime cost is zero.
-  Pixels that aren't key colors pass through unchanged, and the console warns about them.
-- **Adding a skin:** add an entry to `skins[]`. No code changes are needed.
-- **Adding a character:** create a folder in `public/assets/characters/` and add its id to `ROSTER`.
+## Art
+
+All art is original and generated by the scripts in `tools/art/`, so there are no third-party assets to license or credit.
+
+- **Fighters**: a 2D skeletal rig with IK limbs, shaded armor capsules, hand-drawn pixel head stamps, rasterized weapons, and motion smears on attack frames. Poses are plain data in `tools/art/fighters.mjs`.
+- **Palette swaps**: sheets are painted in fixed key colors (`src/palette/roles.js`). Each skin in `character.json` maps them to real colors at load time, so adding a skin is a JSON-only change.
+- **Stages**: *Sigil Keep* (castle courtyard at dusk) and *Moonlit Hall* (throne hall with a rose window). Both have parallax layers and animated torches.
 
 ## Deploy
 
-- **GitHub Pages:** push to `main`. `.github/workflows/deploy.yml` builds and publishes
-  (Settings → Pages → Source: *GitHub Actions*). `base: './'` makes sub-paths work.
-- **Firebase:** run `firebase init hosting` with public dir `dist`, then `npm run build && firebase deploy`.
+- **GitHub Pages**: push to `main`. `.github/workflows/deploy.yml` builds and publishes the site.
+- **Firebase**: run `firebase init hosting` with public dir `dist`, then `npm run build && firebase deploy`.

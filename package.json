@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "gen:placeholders": "node tools/gen-placeholders.mjs"
+    "gen:art": "node tools/art/build.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0"

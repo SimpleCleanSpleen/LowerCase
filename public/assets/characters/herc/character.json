@@ -1,35 +1,198 @@
 {
   "id": "herc",
   "displayName": "Herc",
-  "heightPx": 60,
-  "sheet": "sheet.png",
-  "frameWidth": 64,
-  "frameHeight": 96,
-  "footY": 94,
-  "animations": {
-    "idle": { "frames": [0, 1, 2, 3], "frameRate": 5, "repeat": -1 }
+  "heightPx": 80,
+  "maxHp": 165,
+  "physics": {
+    "walkFwd": 147,
+    "walkBack": 118,
+    "jumpVelocity": -480,
+    "gravity": 1440,
+    "jumpSpeed": 150,
+    "jumpSquat": 4,
+    "landing": 3,
+    "dashF": {
+      "frames": 15,
+      "speed": 290
+    },
+    "dashB": {
+      "frames": 18,
+      "speed": 230,
+      "invuln": 5
+    }
   },
-  "physics": { "walkSpeed": 110, "jumpVelocity": -450, "gravity": 1200 },
-  "hurtbox": { "w": 40, "h": 60 },
-  "block": { "startup": 2, "recovery": 4 },
+  "boxes": {
+    "stand": {
+      "w": 44,
+      "h": 80
+    },
+    "crouch": {
+      "w": 52,
+      "h": 54
+    },
+    "air": {
+      "w": 40,
+      "h": 62,
+      "y": -8
+    },
+    "push": {
+      "w": 34
+    },
+    "throwRange": 16
+  },
   "moves": {
     "high": {
       "name": "Overhead Smash",
-      "baseDamage": 15, "maxDamage": 30, "maxCharge": 30,
-      "startup": 10, "active": 4, "recovery": 16,
-      "hitbox": { "w": 30, "h": 30, "x": 20, "y": -20 }
+      "guard": "high",
+      "baseDamage": 15,
+      "maxDamage": 30,
+      "maxCharge": 30,
+      "startup": 10,
+      "active": 4,
+      "recovery": 16,
+      "hitstun": 22,
+      "blockstun": 19,
+      "pushHit": 14,
+      "pushBlock": 12,
+      "hitbox": {
+        "x": 38,
+        "y": -46,
+        "w": 36,
+        "h": 44
+      },
+      "pose": "high"
     },
     "mid": {
       "name": "Gut Punch",
-      "baseDamage": 12, "maxDamage": 24, "maxCharge": 20,
-      "startup": 8, "active": 3, "recovery": 12,
-      "hitbox": { "w": 25, "h": 20, "x": 20, "y": 0 }
+      "guard": "mid",
+      "baseDamage": 12,
+      "maxDamage": 24,
+      "maxCharge": 20,
+      "startup": 8,
+      "active": 3,
+      "recovery": 12,
+      "hitstun": 18,
+      "blockstun": 17,
+      "pushHit": 12,
+      "pushBlock": 10,
+      "hitbox": {
+        "x": 32,
+        "y": -48,
+        "w": 28,
+        "h": 18
+      },
+      "pose": "mid"
     },
     "low": {
       "name": "Ankle Cleaver",
-      "baseDamage": 10, "maxDamage": 20, "maxCharge": 25,
-      "startup": 9, "active": 4, "recovery": 14,
-      "hitbox": { "w": 35, "h": 15, "x": 20, "y": 25 }
+      "guard": "low",
+      "crouch": true,
+      "baseDamage": 10,
+      "maxDamage": 20,
+      "maxCharge": 25,
+      "startup": 9,
+      "active": 4,
+      "recovery": 14,
+      "hitstun": 18,
+      "blockstun": 16,
+      "pushHit": 12,
+      "pushBlock": 10,
+      "hitbox": {
+        "x": 40,
+        "y": -9,
+        "w": 40,
+        "h": 16
+      },
+      "pose": "low"
+    },
+    "air": {
+      "name": "Diving Chop",
+      "guard": "high",
+      "baseDamage": 12,
+      "maxDamage": 12,
+      "maxCharge": 0,
+      "startup": 7,
+      "active": 6,
+      "recovery": 10,
+      "hitstun": 18,
+      "blockstun": 12,
+      "pushHit": 8,
+      "pushBlock": 10,
+      "hitbox": {
+        "x": 24,
+        "y": -28,
+        "w": 34,
+        "h": 30
+      },
+      "pose": "air"
+    },
+    "sp1": {
+      "name": "Bull Rush",
+      "motion": "qcf",
+      "kind": "rush",
+      "guard": "mid",
+      "baseDamage": 16,
+      "startup": 12,
+      "active": 18,
+      "recovery": 18,
+      "speed": 300,
+      "knockdown": true,
+      "chip": 2,
+      "hitstun": 0,
+      "blockstun": 14,
+      "pushHit": 0,
+      "pushBlock": 22,
+      "hitbox": {
+        "x": 22,
+        "y": -44,
+        "w": 28,
+        "h": 44
+      },
+      "pose": "sp1",
+      "projInvuln": true
+    },
+    "sp2": {
+      "name": "Upper Case",
+      "motion": "dp",
+      "kind": "rise",
+      "guard": "mid",
+      "baseDamage": 18,
+      "startup": 4,
+      "active": 8,
+      "recovery": 14,
+      "landing": 12,
+      "invuln": 6,
+      "rise": {
+        "vx": 40,
+        "vy": -380
+      },
+      "launch": {
+        "vx": 60,
+        "vy": -420
+      },
+      "knockdown": true,
+      "hitstun": 0,
+      "blockstun": 16,
+      "pushHit": 0,
+      "pushBlock": 14,
+      "hitbox": {
+        "x": 16,
+        "y": -68,
+        "w": 30,
+        "h": 52
+      },
+      "pose": "sp2"
+    },
+    "throw": {
+      "name": "Shield Toss",
+      "damage": 20,
+      "startup": 2,
+      "duration": 28,
+      "releaseAt": 12,
+      "launch": {
+        "vx": 160,
+        "vy": -260
+      }
     }
   },
   "skins": [
@@ -46,7 +209,13 @@
         "armorShade": "#7a7f92",
         "trim": "#e0b040",
         "sigil": "#c8283c",
-        "cape": "#c8283c"
+        "cape": "#c8283c",
+        "armorLight": "#eef0f6",
+        "capeShade": "#86162a",
+        "steel": "#c9cdd9",
+        "steelShade": "#7a7f92",
+        "wood": "#8a5a34",
+        "woodShade": "#583620"
       }
     },
     {
@@ -62,7 +231,13 @@
         "armorShade": "#272b44",
         "trim": "#a8b2c8",
         "sigil": "#3fd0c0",
-        "cape": "#2a8c7a"
+        "cape": "#2a8c7a",
+        "armorLight": "#6c76a6",
+        "capeShade": "#1a5a50",
+        "steel": "#b8c4d8",
+        "steelShade": "#5e687c",
+        "wood": "#4c3628",
+        "woodShade": "#2c1e16"
       }
     }
   ]

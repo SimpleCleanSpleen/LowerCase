@@ -1,35 +1,196 @@
 {
   "id": "bella",
   "displayName": "Bella",
-  "heightPx": 84,
-  "sheet": "sheet.png",
-  "frameWidth": 64,
-  "frameHeight": 96,
-  "footY": 94,
-  "animations": {
-    "idle": { "frames": [0, 1, 2, 3], "frameRate": 4, "repeat": -1 }
+  "heightPx": 112,
+  "maxHp": 150,
+  "physics": {
+    "walkFwd": 120,
+    "walkBack": 96,
+    "jumpVelocity": -520,
+    "gravity": 1360,
+    "jumpSpeed": 135,
+    "jumpSquat": 4,
+    "landing": 3,
+    "dashF": {
+      "frames": 18,
+      "speed": 220
+    },
+    "dashB": {
+      "frames": 18,
+      "speed": 210,
+      "invuln": 5
+    }
   },
-  "physics": { "walkSpeed": 90, "jumpVelocity": -550, "gravity": 1200 },
-  "hurtbox": { "w": 48, "h": 84 },
-  "block": { "startup": 2, "recovery": 4 },
+  "boxes": {
+    "stand": {
+      "w": 44,
+      "h": 110
+    },
+    "crouch": {
+      "w": 50,
+      "h": 72
+    },
+    "air": {
+      "w": 40,
+      "h": 86,
+      "y": -10
+    },
+    "push": {
+      "w": 32
+    },
+    "throwRange": 16
+  },
   "moves": {
     "high": {
       "name": "Downward Cleave",
-      "baseDamage": 12, "maxDamage": 24, "maxCharge": 30,
-      "startup": 8, "active": 4, "recovery": 14,
-      "hitbox": { "w": 20, "h": 40, "x": 30, "y": -30 }
+      "guard": "high",
+      "baseDamage": 12,
+      "maxDamage": 24,
+      "maxCharge": 30,
+      "startup": 8,
+      "active": 4,
+      "recovery": 14,
+      "hitstun": 20,
+      "blockstun": 14,
+      "pushHit": 14,
+      "pushBlock": 18,
+      "hitbox": {
+        "x": 50,
+        "y": -54,
+        "w": 36,
+        "h": 52
+      },
+      "pose": "high"
     },
     "mid": {
       "name": "Long Thrust",
-      "baseDamage": 10, "maxDamage": 20, "maxCharge": 20,
-      "startup": 6, "active": 4, "recovery": 10,
-      "hitbox": { "w": 40, "h": 20, "x": 35, "y": -10 }
+      "guard": "mid",
+      "baseDamage": 10,
+      "maxDamage": 20,
+      "maxCharge": 20,
+      "startup": 6,
+      "active": 4,
+      "recovery": 10,
+      "hitstun": 16,
+      "blockstun": 12,
+      "pushHit": 12,
+      "pushBlock": 16,
+      "hitbox": {
+        "x": 56,
+        "y": -58,
+        "w": 40,
+        "h": 16
+      },
+      "pose": "mid"
     },
     "low": {
       "name": "Sweeping Strike",
-      "baseDamage": 8, "maxDamage": 16, "maxCharge": 25,
-      "startup": 7, "active": 3, "recovery": 12,
-      "hitbox": { "w": 45, "h": 15, "x": 30, "y": 35 }
+      "guard": "low",
+      "crouch": true,
+      "baseDamage": 8,
+      "maxDamage": 16,
+      "maxCharge": 25,
+      "startup": 7,
+      "active": 3,
+      "recovery": 12,
+      "hitstun": 16,
+      "blockstun": 12,
+      "pushHit": 12,
+      "pushBlock": 16,
+      "hitbox": {
+        "x": 52,
+        "y": -9,
+        "w": 48,
+        "h": 16
+      },
+      "pose": "low"
+    },
+    "air": {
+      "name": "Sky Cleave",
+      "guard": "high",
+      "baseDamage": 11,
+      "maxDamage": 11,
+      "maxCharge": 0,
+      "startup": 8,
+      "active": 6,
+      "recovery": 10,
+      "hitstun": 18,
+      "blockstun": 12,
+      "pushHit": 8,
+      "pushBlock": 10,
+      "hitbox": {
+        "x": 40,
+        "y": -46,
+        "w": 42,
+        "h": 38
+      },
+      "pose": "air"
+    },
+    "sp1": {
+      "name": "Sigil Wave",
+      "motion": "qcf",
+      "kind": "projectile",
+      "guard": "mid",
+      "baseDamage": 10,
+      "startup": 14,
+      "active": 2,
+      "recovery": 26,
+      "chip": 2,
+      "hitstun": 18,
+      "blockstun": 16,
+      "pushHit": 14,
+      "pushBlock": 16,
+      "projectile": {
+        "x": 40,
+        "y": -52,
+        "w": 22,
+        "h": 22,
+        "speed": 210
+      },
+      "pose": "sp1"
+    },
+    "sp2": {
+      "name": "Rising Cleave",
+      "motion": "dp",
+      "kind": "rise",
+      "guard": "mid",
+      "baseDamage": 14,
+      "startup": 5,
+      "active": 10,
+      "recovery": 18,
+      "landing": 12,
+      "invuln": 7,
+      "rise": {
+        "vx": 30,
+        "vy": -380
+      },
+      "launch": {
+        "vx": 50,
+        "vy": -400
+      },
+      "knockdown": true,
+      "hitstun": 0,
+      "blockstun": 16,
+      "pushHit": 0,
+      "pushBlock": 14,
+      "hitbox": {
+        "x": 24,
+        "y": -92,
+        "w": 36,
+        "h": 60
+      },
+      "pose": "sp2"
+    },
+    "throw": {
+      "name": "Gentle Heave",
+      "damage": 18,
+      "startup": 2,
+      "duration": 28,
+      "releaseAt": 12,
+      "launch": {
+        "vx": 150,
+        "vy": -240
+      }
     }
   },
   "skins": [
@@ -46,7 +207,13 @@
         "armorShade": "#9aa0b4",
         "trim": "#e8c060",
         "sigil": "#c8283c",
-        "cape": "#2c5cc8"
+        "cape": "#2c5cc8",
+        "armorLight": "#ffffff",
+        "capeShade": "#1b3a8c",
+        "steel": "#dadeea",
+        "steelShade": "#8a90a4",
+        "wood": "#6c4a2a",
+        "woodShade": "#44301c"
       }
     },
     {
@@ -62,7 +229,13 @@
         "armorShade": "#c49aac",
         "trim": "#f8f8f8",
         "sigil": "#d0487a",
-        "cape": "#d0487a"
+        "cape": "#d0487a",
+        "armorLight": "#ffffff",
+        "capeShade": "#8c2a52",
+        "steel": "#ececf4",
+        "steelShade": "#a49aac",
+        "wood": "#c8a070",
+        "woodShade": "#8a6a48"
       }
     }
   ]

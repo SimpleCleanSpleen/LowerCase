@@ -1,0 +1,65 @@
+{
+ "id": "keep",
+ "name": "Sigil Keep",
+ "width": 768,
+ "floorY": 236,
+ "layers": [
+  {
+   "file": "sky.png",
+   "scroll": 0,
+   "front": false,
+   "torches": []
+  },
+  {
+   "file": "clouds.png",
+   "scroll": 0.06,
+   "front": false,
+   "torches": []
+  },
+  {
+   "file": "mountains.png",
+   "scroll": 0.15,
+   "front": false,
+   "torches": []
+  },
+  {
+   "file": "castle.png",
+   "scroll": 0.35,
+   "front": false,
+   "torches": []
+  },
+  {
+   "file": "wall.png",
+   "scroll": 0.7,
+   "front": false,
+   "torches": [
+    {
+     "x": 60,
+     "y": 178
+    },
+    {
+     "x": 210,
+     "y": 178
+    },
+    {
+     "x": 360,
+     "y": 178
+    },
+    {
+     "x": 510,
+     "y": 178
+    },
+    {
+     "x": 660,
+     "y": 178
+    }
+   ]
+  },
+  {
+   "file": "floor.png",
+   "scroll": 1,
+   "front": false,
+   "torches": []
+  }
+ ]
+}

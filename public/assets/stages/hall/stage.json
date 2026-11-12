@@ -1,0 +1,78 @@
+{
+ "id": "hall",
+ "name": "Moonlit Hall",
+ "width": 768,
+ "floorY": 236,
+ "layers": [
+  {
+   "file": "back.png",
+   "scroll": 0.2,
+   "front": false,
+   "torches": []
+  },
+  {
+   "file": "pillars.png",
+   "scroll": 0.5,
+   "front": false,
+   "torches": [
+    {
+     "x": 60,
+     "y": 160,
+     "small": true
+    },
+    {
+     "x": 72,
+     "y": 160,
+     "small": true
+    },
+    {
+     "x": 84,
+     "y": 160,
+     "small": true
+    },
+    {
+     "x": 300,
+     "y": 160,
+     "small": true
+    },
+    {
+     "x": 312,
+     "y": 160,
+     "small": true
+    },
+    {
+     "x": 324,
+     "y": 160,
+     "small": true
+    },
+    {
+     "x": 540,
+     "y": 160,
+     "small": true
+    },
+    {
+     "x": 552,
+     "y": 160,
+     "small": true
+    },
+    {
+     "x": 564,
+     "y": 160,
+     "small": true
+    }
+   ]
+  },
+  {
+   "file": "floor.png",
+   "scroll": 1,
+   "front": false,
+   "torches": []
+  },
+  {
+   "file": "fore.png",
+   "scroll": 1.25,
+   "front": true,
+   "torches": []
+  }
+ ]
+}

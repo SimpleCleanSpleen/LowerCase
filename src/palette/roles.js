@@ -22,6 +22,12 @@ export const PALETTE_ROLES = {
   trim: '#ffff00', // gold/silver trim, sigil border
   sigil: '#00ffff', // the shared knightly emblem
   cape: '#ff0000', // cape / plume / tabard cloth
+  armorLight: '#80ff80', // specular highlight on armor
+  capeShade: '#800000',
+  steel: '#8080ff', // weapon blades
+  steelShade: '#4040a0',
+  wood: '#ff80c0', // weapon hafts
+  woodShade: '#a04070',
 };
 
 export const ROLE_NAMES = Object.keys(PALETTE_ROLES);

@@ -1,8 +1,11 @@
 import Phaser from 'phaser';
+import { toggleMute, unlockAudio } from './game/audio/Sfx.js';
 import { GAME_HEIGHT, GAME_WIDTH } from './game/constants.js';
 import { BootScene } from './scenes/BootScene.js';
+import { FightScene } from './scenes/FightScene.js';
 import { PreloadScene } from './scenes/PreloadScene.js';
-import { StageScene } from './scenes/StageScene.js';
+import { SelectScene } from './scenes/SelectScene.js';
+import { TitleScene } from './scenes/TitleScene.js';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO, // WebGL, falls back to Canvas
@@ -10,15 +13,18 @@ const game = new Phaser.Game({
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   backgroundColor: '#0b0b12',
-  pixelArt: true, // nearest-neighbor sampling, no antialiasing
+  pixelArt: true,
   roundPixels: true,
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-  },
+  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+  input: { gamepad: false },
   fps: { target: 60 },
-  scene: [BootScene, PreloadScene, StageScene],
+  scene: [BootScene, PreloadScene, TitleScene, SelectScene, FightScene],
 });
 
-// Handy for poking at things from the devtools console.
+window.addEventListener('keydown', (e) => {
+  unlockAudio();
+  if (e.code === 'KeyM') toggleMute();
+});
+window.addEventListener('pointerdown', unlockAudio);
+
 if (import.meta.env.DEV) window.game = game;
