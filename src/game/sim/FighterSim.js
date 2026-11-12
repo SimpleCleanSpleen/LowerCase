@@ -381,6 +381,11 @@ export class FighterSim {
   // ------------------------------------------------------- hit reactions --
 
   takeHit({ damage, hitstun, launch, dir, push }) {
+    // Hit out of a throw: let go of the victim instead of leaving them stuck.
+    if (this.grabbed?.state === 'thrown') {
+      this.grabbed.thrownBy = null;
+      this.grabbed.launch(-dir * 60, -200);
+    }
     this.hp = Math.max(0, this.hp - damage);
     this.comboHits++;
     this.comboDamage += damage;

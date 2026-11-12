@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { buildCharacterAssets, queueCharacterSheets } from '../assets/characterAssets.js';
-import { stageKey, stageLayerKey } from '../assets/keys.js';
+import { assetUrl, stageKey, stageLayerKey } from '../assets/keys.js';
 import { GAME_HEIGHT, GAME_WIDTH, ROSTER } from '../game/constants.js';
 import { registerFont } from '../game/view/text.js';
 
@@ -21,11 +21,11 @@ export class PreloadScene extends Phaser.Scene {
     queueCharacterSheets(this, ROSTER);
     for (const id of this.cache.json.get('stages')) {
       for (const L of this.cache.json.get(stageKey(id)).layers) {
-        this.load.image(stageLayerKey(id, L.file), `assets/stages/${id}/${L.file}`);
+        this.load.image(stageLayerKey(id, L.file), assetUrl(`stages/${id}/${L.file}`));
       }
     }
-    this.load.image('font', 'assets/ui/font.png');
-    this.load.spritesheet('fx', 'assets/ui/fx.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.image('font', assetUrl('ui/font.png'));
+    this.load.spritesheet('fx', assetUrl('ui/fx.png'), { frameWidth: 32, frameHeight: 32 });
   }
 
   create() {

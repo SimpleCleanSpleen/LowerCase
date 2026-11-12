@@ -103,7 +103,7 @@ export class SelectScene extends Phaser.Scene {
     this.vs.setVisible(!stagePhase);
     this.stageImgs.forEach((c, i) => c.setVisible(i === this.stageIdx));
     setText(this.stageName, `< ${this.stageImgs[this.stageIdx].name} >`);
-    setText(this.help, stagePhase ? 'A D CHOOSE STAGE   J FIGHT   ESC BACK' : this.phase === 'level' ? 'A D CPU DIFFICULTY   J CONFIRM' : 'J CONFIRM   ESC BACK');
+    setText(this.help, stagePhase ? `A D CHOOSE STAGE   ${this.mode === 'versus' ? 'F' : 'J'} FIGHT   ESC BACK` : this.phase === 'level' ? 'A D CPU DIFFICULTY   J CONFIRM' : this.mode === 'versus' ? 'P1: WASD + F TO CONFIRM    P2: ARROWS + K' : 'J CONFIRM   ESC BACK');
   }
 
   /** Avoid identical-looking mirror matches. */

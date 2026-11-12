@@ -1,7 +1,7 @@
 import { buildSkinCanvases } from '../palette/paletteSwap.js';
-import { artKey, baseSheetKey, defKey, skinTextureKey } from './keys.js';
+import { artKey, assetUrl, baseSheetKey, defKey, skinTextureKey } from './keys.js';
 
-const charPath = (id, file) => `assets/characters/${id}/${file}`;
+const charPath = (id, file) => assetUrl(`characters/${id}/${file}`);
 
 /** Boot: queue each character's design data + generated art metadata. */
 export function queueCharacterDefs(scene, roster) {
